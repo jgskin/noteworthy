@@ -1,7 +1,11 @@
 """Quote models"""
 
+import json
+import random
 from django.db import models
 from quote.validators import validate_urlsafe
+
+class EmptyQuoteSetError(Exception): pass
 
 class Group(models.Model):
     """Groups for quote organization"""
@@ -19,3 +23,21 @@ class Quote(models.Model):
 
     def __unicode__(self):
         return "quote {0} from author {1}".format(self.id, self.author)
+
+def get_random_quote(group_name):
+    """Get a random quote from a group_name"""
+    try:
+        group = Group.objects.get(name=group_name)
+        return random.choice(group.quotes.all())
+    except (Group.DoesNotExist, IndexError):
+        raise EmptyQuoteSetError, "No quotes found for {0}".format(group_name)
+
+def get_random_quote_json(group_name):
+    """Get a random quote in json format for a group name"""
+    try:
+        quote = get_random_quote(group_name)
+        response = {"text": quote.text, "author": quote.author}
+    except EmptyQuoteSetError:
+        response = {"not_found": True}
+
+    return json.dumps(response)
