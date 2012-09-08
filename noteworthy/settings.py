@@ -1,9 +1,10 @@
 # Django settings for noteworthy project.
 
-#db configuration
-from noteworthy import db
+#db from url
+import dj_database_url
 
 DEBUG = True
+
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -12,7 +13,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = db.DATABASES
+DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
